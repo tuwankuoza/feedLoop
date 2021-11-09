@@ -9,16 +9,18 @@ class Controller {
       const user = await User.findOne({where: {email}})
       if(!user) {
         res.status(404).json({message: 'Invalid email/password'})
+      } else {
+        let matchPassword = decode(password, user.password)
+        if(!matchPassword) {
+          res.status(404).json({message: 'Invalid email/password'})
+        } else {
+          const access_token = sign({
+            username: user.username,
+            email
+          })
+          res.status(200).json({access_token})
+        }
       }
-
-      let matchPassword = decode(password, user.password)
-      if(!matchPassword) {
-        res.status(404).json({message: 'Invalid email/password'})
-      }
-
-      const access_token = sign({username, email})
-      res.status(200).json({access_token})
-
     } catch (error) {
       res.status(500).json({message: 'Internal server error'})
     }
@@ -59,8 +61,9 @@ class Controller {
       const singleProduct = await Product.findByPk(id)
       if(!singleProduct) {
         res.status(404).json({message: 'Product not found'})
+      } else {
+        res.status(200).json(singleProduct)
       }
-      res.status(200).json(singleProduct)
     } catch (error) {
       res.status(500).json({message: 'Internal server error'})
     }
@@ -71,10 +74,10 @@ class Controller {
       const singleProduct = await Product.findByPk(id)
       if(!singleProduct) {
         res.status(404).json({message: 'Product not found'})
+      } else {
+        const deletedProduct = await Product.destroy({where: {id}})
+        res.status(201).json({message: 'Product deleted successfully'})
       }
-
-      const deletedProduct = await Product.destroy({where: {id}})
-      res.status(201).json({message: 'Product deleted successfully'})
     } catch (error) {
       res.status(500).json({message: 'Internal server error'})
     }
