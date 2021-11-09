@@ -1,0 +1,6 @@
+POST /login => token
+POST /register => token
+POST /product => insert product
+GET /product => get all product dari user yg login
+GET / product/:productID => dapet product sesuai id
+DELETE /product/:productID => hapus product sesuai id
